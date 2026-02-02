@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import InputField from "../components/InputFields";
 import { signupUser } from "../api/auth";
 import "../styles/auth.css";
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -13,111 +15,120 @@ const Signup = () => {
 
   const [errors, setErrors] = useState({});
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validate = () => {
-  let newErrors = {};
+    let newErrors = {};
 
-  const nameRegex = /^[A-Za-z]+$/;
+    const nameRegex = /^[A-Za-z]+$/;
 
-  if (form.username.length < 3)
-    newErrors.username = "Username must be at least 3 characters";
-  else if (!nameRegex.test(form.username))
-    newErrors.username = "Username must contain only letters and no whitespaces";
+    if (form.username.length < 3)
+      newErrors.username = "Username must be at least 3 characters";
+    else if (!nameRegex.test(form.username))
+      newErrors.username = "Username must contain only letters and no whitespaces";
 
-  if (!form.email.includes("@"))
-    newErrors.email = "Enter a valid email";
+    if (!form.email.includes("@"))
+      newErrors.email = "Enter a valid email";
 
-  if (form.password.length < 6)
-    newErrors.password = "Password must be at least 6 characters";
+    if (form.password.length < 6)
+      newErrors.password = "Password must be at least 6 characters";
 
-  if (form.password !== form.confirm_password)
-    newErrors.confirm_password = "Passwords do not match";
+    if (form.password !== form.confirm_password)
+      newErrors.confirm_password = "Passwords do not match";
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (name, value) => {
+    setForm({ ...form, [name]: value });
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess("");
+    setErrors({});
 
     if (!validate()) return;
 
+    setLoading(true);
     try {
-      const res = await signupUser(form);
-      setSuccess(res.message);
-      setForm({
-        username: "",
-        email: "",
-        password: "",
-        confirm_password: "",
+      await signupUser(form);
+      setSuccess("Account created successfully! Redirecting to login...");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (err) {
+      setErrors({
+        api: err.response?.data?.detail || "Signup failed",
       });
-    } 
-    catch (err) {
-  const message =
-    err.response?.data?.detail ||
-    err.response?.data?.message ||
-    "Signup failed";
-
-  setErrors({ api: message });
-}
-
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-  <div className="auth-wrapper">
-    <form className="auth-card" onSubmit={handleSubmit}>
-      <h2>Create Account</h2>
-      <p className="subtitle">Sign up to continue</p>
+    <div className="auth-wrapper">
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <h2>Create Account</h2>
+        
+        {success && <div className="success-message">{success}</div>}
+        {errors.api && <div className="error-message">{errors.api}</div>}
 
         <InputField
           label="Username"
+          name="username"
           type="text"
           value={form.username}
-          onChange={(e) => handleChange({ ...e, target: { ...e.target, name: "username" } })}
+          onChange={handleChange}
           error={errors.username}
+          placeholder="Enter your username"
         />
 
         <InputField
           label="Email"
+          name="email"
           type="email"
           value={form.email}
-          onChange={(e) => handleChange({ ...e, target: { ...e.target, name: "email" } })}
+          onChange={handleChange}
           error={errors.email}
+          placeholder="Enter your email"
         />
 
         <InputField
           label="Password"
+          name="password"
           type="password"
           value={form.password}
-          onChange={(e) => handleChange({ ...e, target: { ...e.target, name: "password" } })}
+          onChange={handleChange}
           error={errors.password}
+          placeholder="Enter your password"
         />
 
         <InputField
           label="Confirm Password"
+          name="confirm_password"
           type="password"
           value={form.confirm_password}
-          onChange={(e) =>
-            handleChange({ ...e, target: { ...e.target, name: "confirm_password" } })
-          }
+          onChange={handleChange}
           error={errors.confirm_password}
+          placeholder="Confirm your password"
         />
 
-        {errors.api && <p className="error-text">{errors.api}</p>}
-      {success && <p className="success-text">{success}</p>}
+        <button type="submit" className="auth-button" disabled={loading}>
+          {loading ? "Creating Account..." : "Sign Up"}
+        </button>
 
-      <button className="primary-btn" type="submit">
-        Sign Up
-      </button>
-    </form>
-  </div>
-);
+        <div className="auth-link">
+          Already have an account? <Link to="/login">Login</Link>
+        </div>
+      </form>
+    </div>
+  );
 };
 
 export default Signup;

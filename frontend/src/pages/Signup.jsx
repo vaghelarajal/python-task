@@ -17,6 +17,39 @@ const Signup = () => {
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const validateField = (name, value) => {
+    let error = "";
+    const nameRegex = /^[A-Za-z]+$/;
+
+    switch (name) {
+      case "username":
+        if (value.length < 3) {
+          error = "Username must be at least 3 characters";
+        } else if (!nameRegex.test(value)) {
+          error = "Username must contain only letters and no whitespaces";
+        }
+        break;
+      case "email":
+        if (!value.includes("@")) {
+          error = "Enter a valid email";
+        }
+        break;
+      case "password":
+        if (value.length < 6) {
+          error = "Password must be at least 6 characters";
+        }
+        break;
+      case "confirm_password":
+        if (value !== form.password) {
+          error = "Passwords do not match";
+        }
+        break;
+    }
+
+    setErrors(prev => ({ ...prev, [name]: error }));
+    return error === "";
+  };
+
   const validate = () => {
     let newErrors = {};
 
@@ -48,6 +81,10 @@ const Signup = () => {
     }
   };
 
+  const handleBlur = (name, value) => {
+    validateField(name, value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess("");
@@ -58,7 +95,7 @@ const Signup = () => {
     setLoading(true);
     try {
       await signupUser(form);
-      setSuccess("Account created successfully! Redirecting to login...");
+      setSuccess("Account created successfully!");
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -85,6 +122,7 @@ const Signup = () => {
           type="text"
           value={form.username}
           onChange={handleChange}
+          onBlur={handleBlur}
           error={errors.username}
           placeholder="Enter your username"
         />
@@ -95,6 +133,7 @@ const Signup = () => {
           type="email"
           value={form.email}
           onChange={handleChange}
+          onBlur={handleBlur}
           error={errors.email}
           placeholder="Enter your email"
         />
@@ -105,6 +144,7 @@ const Signup = () => {
           type="password"
           value={form.password}
           onChange={handleChange}
+          onBlur={handleBlur}
           error={errors.password}
           placeholder="Enter your password"
         />
@@ -115,6 +155,7 @@ const Signup = () => {
           type="password"
           value={form.confirm_password}
           onChange={handleChange}
+          onBlur={handleBlur}
           error={errors.confirm_password}
           placeholder="Confirm your password"
         />

@@ -1,34 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import Base, engine
 from routes.auth import router as auth_router
 
+# Simple, fast startup
+app = FastAPI(title="Auth API", version="1.0.0")
 
-app = FastAPI(title="Authentication API")
-
-
-# Enable CORS for Vite frontend
+# Minimal CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
 )
 
-
-# Create DB tables
-Base.metadata.create_all(bind=engine)
-
-# Include routers
+# add authentication routes
 app.include_router(auth_router)
 
 
 @app.get("/")
 def root():
-    return {"message": "Authentication API is running!"}
-    return {"message": "API is working!"}
-
-
-# Register routes
-app.include_router(auth_router)
+    return {"status": "ok", "message": "API running"}

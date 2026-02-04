@@ -31,6 +31,20 @@ const ResetPassword = () => {
     }
   };
 
+  const handleBlur = (name, value) => {
+    let error = "";
+    
+    if (name === "password" && value.length < 6) {
+      error = "Password must be at least 6 characters";
+    } else if (name === "confirmPassword" && value !== form.password) {
+      error = "Passwords do not match";
+    }
+    
+    if (error) {
+      setErrors(prev => ({ ...prev, [name]: error }));
+    }
+  };
+
   const validate = () => {
     let newErrors = {};
 
@@ -104,6 +118,7 @@ const ResetPassword = () => {
             type="password"
             value={form.password}
             onChange={handleChange}
+            onBlur={handleBlur}
             error={errors.password}
             placeholder="Enter new password"
           />
@@ -114,6 +129,7 @@ const ResetPassword = () => {
             type="password"
             value={form.confirmPassword}
             onChange={handleChange}
+            onBlur={handleBlur}
             error={errors.confirmPassword}
             placeholder="Confirm new password"
           />

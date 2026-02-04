@@ -253,8 +253,8 @@ const Dashboard = () => {
                         fontSize: "14px",
                       }}
                       placeholder="Enter your age"
-                      min="1"
-                      max="120"
+                      min="13"
+                      max="100"
                     />
                   </div>
 
@@ -313,38 +313,6 @@ const Dashboard = () => {
         <p style={{ fontSize: "1.25rem", margin: 0, opacity: 0.9 }}>
           Welcome to your dashboard!
         </p>
-      </div>
-
-      {/* Content Area */}
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <div
-          style={{
-            maxWidth: "800px",
-            margin: "0 auto",
-            background: "#fff",
-            padding: "40px",
-            borderRadius: "12px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-          }}
-        >
-          <h2 style={{ marginBottom: "16px", color: "#1f2937" }}>
-            Your Account Information
-          </h2>
-          <p style={{ color: "#6b7280", marginBottom: "24px" }}>
-            Click on the profile icon in the header to view and edit your details.
-          </p>
-          
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
-            <div style={{ padding: "20px", background: "#f8fafc", borderRadius: "8px" }}>
-              <h3 style={{ margin: "0 0 8px 0", color: "#374151" }}>Email</h3>
-              <p style={{ margin: 0, color: "#6b7280" }}>{user.email}</p>
-            </div>
-            <div style={{ padding: "20px", background: "#f8fafc", borderRadius: "8px" }}>
-              <h3 style={{ margin: "0 0 8px 0", color: "#374151" }}>Username</h3>
-              <p style={{ margin: 0, color: "#6b7280" }}>{user.username}</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
